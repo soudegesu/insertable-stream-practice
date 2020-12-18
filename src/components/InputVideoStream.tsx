@@ -1,18 +1,12 @@
-import React, { FC, useEffect, useRef } from 'react';
+import React, { FC } from 'react';
 import { useRecoilValue } from 'recoil';
-import { mediaStreamAtom } from '../states/atom';
+import VideoStream from './VideoStream';
+import { inputMediaStreamAtom } from '../states/atom';
 
 const InputVideoStream: FC = () => {
-  const videoPlayerRef = useRef<HTMLVideoElement | null>(null);
-  const videoStream = useRecoilValue(mediaStreamAtom);
+  const inputStream = useRecoilValue(inputMediaStreamAtom);
 
-  useEffect(() => {
-    if (videoPlayerRef && videoPlayerRef.current && videoStream) {
-      videoPlayerRef.current.srcObject = videoStream;
-    }
-  }, [videoPlayerRef.current, videoStream]);
-
-  return <video ref={videoPlayerRef} muted autoPlay width={480} height={360} />;
+  return <VideoStream stream={inputStream} />;
 };
 
 export default InputVideoStream;
