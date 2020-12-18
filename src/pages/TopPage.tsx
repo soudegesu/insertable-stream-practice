@@ -1,15 +1,19 @@
-import { Box, Grid, GridList } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import React, { FC } from 'react';
 import StartButton from '../components/StartButton';
+import VideoStream from '../components/VideoStream';
 
 const TopPage: FC = () => {
   return (
     <Box paddingTop={10}>
-      <GridList>
-        <Grid>
-          <StartButton />
+      <Grid container>
+        <Grid item>
+          <VideoStream />
         </Grid>
-      </GridList>
+      </Grid>
+      <Box padding={1}>
+        <StartButton />
+      </Box>
     </Box>
   );
 };
