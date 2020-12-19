@@ -1,7 +1,7 @@
 import { Button } from '@material-ui/core';
 import React, { FC } from 'react';
 import { useRecoilCallback } from 'recoil';
-import usePeerConnection from '../hooks/usePeerConnection';
+import useTransformaer from '../hooks/useTransformer';
 import {
   audioAtom,
   inputMediaStreamAtom,
@@ -22,12 +22,11 @@ const ConnectButton: FC = () => {
 };
 
 const useConnectButton = () => {
-  const { getPeerConnection, getOfferOption } = usePeerConnection();
+  const { senderTransform } = useTransformaer();
 
   const handleOnTrack = useRecoilCallback(
     ({ set }) => (e: RTCTrackEvent) => {
       const stream = e.streams[0];
-      console.log(stream);
       set(outputMediaStreamAtom, stream);
     },
     [],
@@ -40,11 +39,13 @@ const useConnectButton = () => {
     if (!stream) {
       return;
     }
-
-    const inputPC = getPeerConnection();
+    const config = { encodedInsertableStreams: true } as any;
+    const inputPC = new RTCPeerConnection(config);
     set(inputPCAtom, inputPC);
     stream.getTracks().forEach((track) => inputPC.addTrack(track, stream));
-    const outputPC = getPeerConnection();
+    inputPC.getSenders().forEach(senderTransform);
+
+    const outputPC = new RTCPeerConnection();
     set(outputPCAtom, outputPC);
     outputPC.ontrack = handleOnTrack;
 
@@ -78,6 +79,15 @@ const useConnectButton = () => {
       console.error(e);
     }
   });
+
+  const getOfferOption = ({ video, audio }: { video: boolean; audio: boolean }): RTCOfferOptions => {
+    const offerOptions = {
+      offerToReceiveAudio: audio,
+      offerToReceiveVideo: video,
+    };
+    return offerOptions;
+  };
+
   return { handleOnClick };
 };
 
