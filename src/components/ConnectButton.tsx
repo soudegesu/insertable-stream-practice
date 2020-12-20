@@ -1,7 +1,6 @@
 import { Button } from '@material-ui/core';
 import React, { FC } from 'react';
 import { useRecoilCallback } from 'recoil';
-import useTransformaer from '../hooks/useTransformer';
 import {
   audioAtom,
   inputMediaStreamAtom,
@@ -9,6 +8,7 @@ import {
   outputMediaStreamAtom,
   outputPCAtom,
   videoAtom,
+  workerAtom,
 } from '../states/atom';
 
 const ConnectButton: FC = () => {
@@ -22,8 +22,6 @@ const ConnectButton: FC = () => {
 };
 
 const useConnectButton = () => {
-  const { senderTransform } = useTransformaer();
-
   const handleOnTrack = useRecoilCallback(
     ({ set }) => (e: RTCTrackEvent) => {
       const stream = e.streams[0];
@@ -35,6 +33,7 @@ const useConnectButton = () => {
   const handleOnClick = useRecoilCallback(({ snapshot, set }) => async () => {
     const audio = await snapshot.getPromise(audioAtom);
     const video = await snapshot.getPromise(videoAtom);
+    const worker = await snapshot.getPromise(workerAtom);
     const stream = await snapshot.getPromise(inputMediaStreamAtom);
     if (!stream) {
       return;
@@ -43,7 +42,8 @@ const useConnectButton = () => {
     const inputPC = new RTCPeerConnection(config);
     set(inputPCAtom, inputPC);
     stream.getTracks().forEach((track) => inputPC.addTrack(track, stream));
-    inputPC.getSenders().forEach(senderTransform);
+    const [sender] = inputPC.getSenders();
+    worker.setupSenderTransform(sender);
 
     const outputPC = new RTCPeerConnection();
     set(outputPCAtom, outputPC);

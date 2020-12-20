@@ -2,7 +2,7 @@ import { Button } from '@material-ui/core';
 import React, { FC } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import useUserMedia from '../hooks/useUserMedia';
-import { audioAtom, inputMediaStreamAtom, videoAtom, videoConstraintsAtom } from '../states/atom';
+import { audioAtom, inputMediaStreamAtom, videoAtom, videoConstraintsAtom, workerAtom } from '../states/atom';
 
 const StartButton: FC = () => {
   const { handleOnClick } = useStartButton();
@@ -19,6 +19,7 @@ const useStartButton = () => {
   const video = useRecoilValue(videoAtom);
   const videoConstraints = useRecoilValue(videoConstraintsAtom);
   const { getUserMedia } = useUserMedia({ constraints: { video, audio } });
+  const worker = useRecoilValue(workerAtom);
 
   const setInputMediaStream = useSetRecoilState(inputMediaStreamAtom);
 
@@ -28,6 +29,7 @@ const useStartButton = () => {
     await track.applyConstraints(videoConstraints);
     console.log(track.getConstraints());
     setInputMediaStream(stream);
+    worker.startWorker();
   };
 
   return { handleOnClick };

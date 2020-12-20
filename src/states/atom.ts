@@ -1,5 +1,5 @@
 import { atom } from 'recoil';
-import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
+import TransformWorker from '../worker/TransformWorker';
 
 export const videoAtom = atom<boolean>({
   key: 'video',
@@ -39,8 +39,7 @@ export const outputPCAtom = atom<RTCPeerConnection | undefined>({
   default: undefined,
 });
 
-export const facemeshModelAtom = atom<faceLandmarksDetection.FaceLandmarksDetector | undefined>({
-  key: 'facemeshModel',
-  default: undefined,
-  dangerouslyAllowMutability: true,
+export const workerAtom = atom<TransformWorker>({
+  key: 'worker',
+  default: new TransformWorker(),
 });
