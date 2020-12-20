@@ -3,7 +3,7 @@ export default class TransformWorker {
   onWorkerDisconnect: Function | null;
 
   constructor() {
-    this.worker = new Worker('/worker/estimate.worker.js', { name: 'Pass through worker' });
+    this.worker = new Worker('/worker/transform.worker.js', { name: 'Pass through worker' });
     this.onWorkerDisconnect = null;
   }
 
